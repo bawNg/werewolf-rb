@@ -16,3 +16,7 @@ irc:
       ssl: true
       password: ''
       channel: { id: 0, name: '#modbot' }
+
+databases:
+  - adapter: sqlite3
+    database: modbot

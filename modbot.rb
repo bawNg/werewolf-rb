@@ -45,14 +45,14 @@ module Core
   class << self # class attributes
     def exit(msg="Shutting down")
       return if $exiting
-      puts "#{msg}..."
+      log :green, "#{msg}..."
       $exiting = true
       Modules.unload_all
       EM.add_timer(0.25) { EM.stop }
     end
 
     def restart(msg="Reloading core")
-      puts "#{msg}..."
+      log :green, "#{msg}..."
       Modules.unload_all
       EM.add_timer(0.25) do
         EM.stop
@@ -75,13 +75,23 @@ module Core
 
   @time_started = Time.now
 
-  puts "Loading #{Name} v#{Version}..."
-  puts "Loading YAML config..."
+  log :green, "Loading #{Name} v#{Version}..."
+  log :green, "Loading YAML config..."
   $config = Hash[YAML.load_file("config.yml").collect {|k, v| [k, v] }]
-  puts "Loaded config: #{$config.inspect}"
+  log :green, "Loaded config: #{$config.inspect}"
 
   $template = YAML.load_file("#{$prefix}template.yml")
   log :green, "Loaded template file."
+
+  $config.databases.each do |config|
+    case config.adapter
+      when 'sqlite3'
+        config.database = "./db/#{config.database}.sqlite3"
+      else
+        raise NotImplementedError, "Database adapter not supported: #{config.adapter}"
+    end
+    ActiveRecord::Base.establish_connection(config)
+  end
 
   Model.load_all
 

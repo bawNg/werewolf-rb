@@ -180,7 +180,6 @@ module Irc #TODO: rescue from exceptions that occur inside irc library callbacks
   end
 
   on :join do
-    puts "-> on :join"
     send_reply :notice, :channel, :join, channel: channel if target.downcase == server.channel.downcase
 
     irc_user = server.user[sender.nick]

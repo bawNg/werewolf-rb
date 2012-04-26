@@ -1,21 +1,25 @@
 module Model
-  @base_classes = {}
-
   class << self
     def load(name)
-      file_name = File.expand_path(File.dirname(__FILE__)) + "/model/#{name.underscore}.rb"
-      return false unless File.exists? file_name
+      model_path = "#{File.expand_path(File.dirname(__FILE__))}/model/#{name.underscore}.rb"
+      return false unless File.exists? model_path
       unload(name)
-      Kernel.load file_name
-      puts "[Model] Loaded model: #{name.classify}"
+      Kernel.load(model_path)
+      class_name = name.classify
+      log :green, "[Model] Loaded model: #{class_name}"
+      unless class_name.constantize.table_exists?
+        log :green, "[Model] Creating schema for table: #{class_name}"
+        schema_path = "#{File.expand_path(File.dirname(__FILE__))}/db/schema/#{name.underscore}.rb"
+        Kernel.load(schema_path)
+      end
       true
     end
 
     def load_all
-      Dir.glob(File.expand_path(File.dirname(__FILE__)) + '/model/*.rb') do |file_name|
-        Kernel.load file_name
+      Dir.glob(File.expand_path(File.dirname(__FILE__)) + '/model/*.rb') do |file_path|
+        load(File.basename(file_path, '.rb'))
       end
-      puts "[Model] Loaded all models."
+      log :green, "[Model] Loaded all models."
     end
 
     def unload(name)
