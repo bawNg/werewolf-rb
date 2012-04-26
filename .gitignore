@@ -1,0 +1,4 @@
+.bundle
+.idea/
+*.log
+config.yml

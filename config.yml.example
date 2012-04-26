@@ -1,0 +1,18 @@
+web_services:
+  port: 18090 # incremented by 1 while running in dev environment
+  web_socket_port: 18080
+  session_cookie: m0d1307c00k13
+
+irc:
+  nickname:
+    - ModBot
+    - ModBot_
+  command_trigger: '!'
+
+  servers:
+    - name: ShadowFire
+      address: za.shadowfire.org
+      port: 7000
+      ssl: true
+      password: ''
+      channel: { id: 0, name: '#modbot' }
